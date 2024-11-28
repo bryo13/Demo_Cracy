@@ -1,5 +1,4 @@
 /// create_database creates the cracy.db sqlite database
-
 use sqlx::{migrate::MigrateDatabase, Sqlite};
 
 const DB_PATH: &str = "sqlite://cracy.db";
@@ -13,7 +12,6 @@ pub fn create_db() -> Result<String, Err> {
     }
     Ok(String::from("Database ready"))
 }
-
 
 mod tests {
     use super::*;
