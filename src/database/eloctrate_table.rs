@@ -27,7 +27,7 @@ pub fn create_electorate_table() -> Result<String, String> {
         }
 
         Err(error) => {
-            if error == "Database exists" {
+            if !db {
                 elec_table()
             } else {
                 Err(String::from(
