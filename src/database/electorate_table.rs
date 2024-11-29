@@ -16,14 +16,14 @@
 /// Inserting data will also be handled in this module via sample seed
 ///     data
 use super::create_database;
-use sqlx::SqlitePool;
+use sqlx::{SqlitePool, Row};
 
 struct Electorate {
-    DOB: String,
-    First_name: String,
-    Last_name: String,
-    ID_number: u64,
-    County: String,
+    dob: String,
+    first_name: String,
+    last_name: String,
+    id_number: u64,
+    county: String,
 }
 
 pub fn create_electorate_table() -> Result<String, String> {
@@ -64,6 +64,7 @@ async fn elec_table() -> Result<String, String> {
     Ok(String::from("--> Created electorate table successfully"))
 }
 
+/*
 #[tokio::main]
 async fn insert_electorate() -> Result<String, String> {
     let insert_pool = SqlitePool::connect(create_database::DB_PATH)
@@ -79,21 +80,46 @@ async fn insert_electorate() -> Result<String, String> {
 
     Ok(String::from("--> Inserted electorate table successfully"))
 }
-
-
+*/
+/*
 fn seed() -> Vec<Electorate> {
     let citizens = vec![
-        Electorate {DOB: '1943-02-22',First_name: "Dors", Last_name:"Venabili", County:"Uni"},
-        Electorate {DOB: '1943-11-21',First_name: "Eto", Last_name:"Demerzel", County:"Terminus"},
-        Electorate {DOB: '1982-01-02',First_name: "Rashelle", Last_name:"I", County:"Wye"},
-        Electorate {DOB: '1929-12-04',First_name: "Mannix", Last_name:"IV", County:"Wye"},
-        Electorate {DOB: '1974-02-22',First_name: "Emmer", Last_name:"Thalus", County:"Wye"},
-        Electorate {DOB: '2017-10-17',First_name: "Raych", Last_name:"I", County:"Dahl"},
-        Electorate {DOB: '1978-02-12',First_name: "Davan", Last_name:"I", County:"Dahl"},
-        Electorate {DOB: '1969-02-22',First_name: "Cleon", Last_name:"I", County:"Terminus"},
-        Electorate {DOB: '1968-02-22',First_name: "Hari", Last_name:"Seldon", County:"Terminus"},
+        Electorate {dob: "1943-02-22".to_string(),first_name: "Dors", last_name:"Venabili", county:"Uni"},
+        Electorate {dob: "1943-11-21",first_name: "Eto", last_name:"Demerzel", county:"Terminus"},
+        Electorate {dob: "1982-01-02",first_name: "Rashelle", last_name:"I", county:"Wye"},
+        Electorate {dob: "1929-12-04",first_name: "Mannix", last_name:"IV", county:"Wye"},
+        Electorate {dob: "1974-02-22",first_name: "Emmer", last_name:"Thalus", county:"Wye"},
+        Electorate {dob: "2017-10-17",first_name: "Raych", last_name:"I", county:"Dahl"},
+        Electorate {dob: "1978-02-12",first_name: "Davan", last_name:"I", county:"Dahl"},
+        Electorate {dob: "1969-02-22",first_name: "Cleon", last_name:"I", County:"Terminus"},
+        Electorate {dob: "1968-02-22",first_name: "Hari", last_name:"Seldon", county:"Terminus"},
     ];
     
     citizens
 }
+*/
+#[cfg(test)]
+mod test {
+    use super::*;
 
+    // test electorate table exists in db
+    #[tokio::test]
+    async fn test_elector_table() {
+        let db_pool = SqlitePool::connect(create_database::DB_PATH)
+        .await
+        .expect("couldnt create test pool");
+
+        let table = sqlx::query(
+            "SELECT name 
+            FROM sqlite_master 
+            WHERE type='table' AND name='electorate_table';"
+        )
+        .fetch_one(&db_pool)
+        .await
+        .expect("Error querying table in db");
+
+        let name = table.get::<String, &str>("name");
+
+        assert_eq!(name, "electorate_table");
+    }
+}
