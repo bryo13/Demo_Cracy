@@ -25,7 +25,7 @@ pub fn create_electorate_table() -> Result<String, String> {
         Ok(_) => elec_table(),
 
         Err(error) => {
-            if error == "Database exists" {
+            if !db {
                 elec_table()
             } else {
                 Err(String::from("Error met when creating electorate table"))
