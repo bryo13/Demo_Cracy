@@ -25,7 +25,7 @@ pub fn create_electorate_table() -> Result<String, String> {
         Ok(_) => elec_table(),
 
         Err(error) => {
-            if !db {
+            if error == "Database exists" {
                 elec_table()
             } else {
                 Err(String::from("Error met when creating electorate table"))
@@ -54,5 +54,12 @@ async fn elec_table() -> Result<String, String> {
     .expect("Couldnt exec create table query");
 
     println!("--> Create table query result: {:?}", elect_table);
-    Ok(String::from("Created electorate table successfully"))
+    Ok(String::from("--> Created electorate table successfully"))
+}
+
+#[tokio::main]
+async fn insert_electorate() -> Result<String, String> {
+    let insert_pool = SqlitePool::connect(create_database::DB_PATH)
+        .await
+        .expect("Could not create insert pool");
 }
