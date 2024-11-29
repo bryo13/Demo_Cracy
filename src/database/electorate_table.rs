@@ -16,22 +16,19 @@
 /// Inserting data will also be handled in this module via sample seed
 ///     data
 use super::create_database;
-use sqlx::{migrate::MigrateDatabase, Sqlite, SqlitePool};
+use sqlx::SqlitePool;
 
 pub fn create_electorate_table() -> Result<String, String> {
     let db = create_database::create_db();
 
     match db {
-        Ok(_) => {
-            elec_table()
-        }
+        Ok(_) => elec_table(),
 
         Err(error) => {
             if error == "Database exists" {
                 elec_table()
             } else {
-                Err(String::from(
-                    "Error met when creating electorate table"))
+                Err(String::from("Error met when creating electorate table"))
             }
         }
     }
@@ -56,6 +53,6 @@ async fn elec_table() -> Result<String, String> {
     .await
     .expect("Couldnt exec create table query");
 
-    println!("Create table query result: {:?}",elect_table);
+    println!("--> Create table query result: {:?}", elect_table);
     Ok(String::from("Created electorate table successfully"))
 }

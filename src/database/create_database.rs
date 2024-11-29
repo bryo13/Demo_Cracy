@@ -10,7 +10,7 @@ pub async fn create_db() -> Result<String, String> {
             .await
             .expect("Couldnt create db");
     } else {
-        println!("Db exists");
+        println!("--> Db exists");
     }
     Ok(String::from("Database ready"))
 }
