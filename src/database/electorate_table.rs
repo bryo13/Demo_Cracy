@@ -16,7 +16,7 @@
 /// Inserting data will also be handled in this module via sample seed
 ///     data
 use super::create_database;
-use sqlx::{SqlitePool, Row};
+use sqlx::SqlitePool;
 
 struct Electorate {
     dob: String,
@@ -83,38 +83,92 @@ async fn insert_electorate() -> Result<String, String> {
     Ok(String::from("--> Inserted electorate table successfully"))
 }
 */
-/*
 fn seed() -> Vec<Electorate> {
     let citizens = vec![
-        Electorate {dob: "1943-02-22".to_string(),first_name: "Dors", last_name:"Venabili", county:"Uni"},
-        Electorate {dob: "1943-11-21",first_name: "Eto", last_name:"Demerzel", county:"Terminus"},
-        Electorate {dob: "1982-01-02",first_name: "Rashelle", last_name:"I", county:"Wye"},
-        Electorate {dob: "1929-12-04",first_name: "Mannix", last_name:"IV", county:"Wye"},
-        Electorate {dob: "1974-02-22",first_name: "Emmer", last_name:"Thalus", county:"Wye"},
-        Electorate {dob: "2017-10-17",first_name: "Raych", last_name:"I", county:"Dahl"},
-        Electorate {dob: "1978-02-12",first_name: "Davan", last_name:"I", county:"Dahl"},
-        Electorate {dob: "1969-02-22",first_name: "Cleon", last_name:"I", County:"Terminus"},
-        Electorate {dob: "1968-02-22",first_name: "Hari", last_name:"Seldon", county:"Terminus"},
+        Electorate {
+            dob: "1943-02-22".to_string(),
+            first_name: "Dors".to_string(),
+            last_name: "Venabili".to_string(),
+            id_number: 23422345,
+            county: "Uni".to_string(),
+        },
+        Electorate {
+            dob: "1943-11-21".to_string(),
+            first_name: "Eto".to_string(),
+            last_name: "Demerizel".to_string(),
+            id_number: 35343463,
+            county: "Terminus".to_string(),
+        },
+        Electorate {
+            dob: "1982-01-02".to_string(),
+            first_name: "Rashelle".to_string(),
+            last_name: "I".to_string(),
+            id_number: 6546347,
+            county: "Wye".to_string(),
+        },
+        Electorate {
+            dob: "1929-12-04".to_string(),
+            first_name: "Mannix".to_string(),
+            last_name: "IV".to_string(),
+            id_number: 90242523,
+            county: "Wye".to_string(),
+        },
+        Electorate {
+            dob: "1974-02-22".to_string(),
+            first_name: "Emmer".to_string(),
+            last_name: "Thalus".to_string(),
+            id_number: 82344869,
+            county: "Wye".to_string(),
+        },
+        Electorate {
+            dob: "2017-10-17".to_string(),
+            first_name: "Raych".to_string(),
+            last_name: "I".to_string(),
+            id_number: 9934521,
+            county: "Dahl".to_string(),
+        },
+        Electorate {
+            dob: "1978-02-12".to_string(),
+            first_name: "Davan".to_string(),
+            last_name: "I".to_string(),
+            id_number: 45238903,
+            county: "Dahl".to_string(),
+        },
+        Electorate {
+            dob: "1969-02-22".to_string(),
+            first_name: "Cleon".to_string(),
+            last_name: "I".to_string(),
+            id_number: 6743434,
+            county: "Terminus".to_string(),
+        },
+        Electorate {
+            dob: "1968-02-22".to_string(),
+            first_name: "Hari".to_string(),
+            last_name: "Seldon".to_string(),
+            id_number: 31415926,
+            county: "Terminus".to_string(),
+        },
     ];
-    
+
     citizens
 }
-*/
+
 #[cfg(test)]
 mod test {
+    use sqlx::Row;
     use super::*;
 
     // test electorate table exists in db
     #[tokio::test]
     async fn test_elector_table() {
         let db_pool = SqlitePool::connect(create_database::DB_PATH)
-        .await
-        .expect("couldnt create test pool");
+            .await
+            .expect("couldnt create test pool");
 
         let table = sqlx::query(
             "SELECT name 
             FROM sqlite_master 
-            WHERE type='table' AND name='electorate_table';"
+            WHERE type='table' AND name='electorate_table';",
         )
         .fetch_one(&db_pool)
         .await
