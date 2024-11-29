@@ -16,9 +16,6 @@
 /// Inserting data will also be handled in this module via sample seed
 ///     data
 use super::create_database;
-<<<<<<< HEAD
-use sqlx::SqlitePool;
-=======
 use sqlx::{SqlitePool, Row};
 
 struct Electorate {
@@ -28,7 +25,6 @@ struct Electorate {
     id_number: u64,
     county: String,
 }
->>>>>>> database
 
 pub fn create_electorate_table() -> Result<String, String> {
     let db = create_database::create_db();
@@ -54,11 +50,7 @@ async fn elec_table() -> Result<String, String> {
 
     let elect_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS electorate_table(
-<<<<<<< HEAD
-            ID integer not null primary key,
-=======
             ID integer PRIMARY KEY AUTOINCREMENT,
->>>>>>> database
             DOB integer,
             First_name varchar(255),
             Last_name varchar(255),
@@ -69,24 +61,17 @@ async fn elec_table() -> Result<String, String> {
     .await
     .expect("Couldnt exec create table query");
 
-<<<<<<< HEAD
     println!("--> Create table query result: {:?}", elect_table);
     Ok(String::from("--> Created electorate table successfully"))
 }
 
-=======
-    Ok(String::from("--> Created electorate table successfully"))
-}
 
 /*
->>>>>>> database
 #[tokio::main]
 async fn insert_electorate() -> Result<String, String> {
     let insert_pool = SqlitePool::connect(create_database::DB_PATH)
         .await
         .expect("Could not create insert pool");
-<<<<<<< HEAD
-=======
 
     let insert_query = sqlx::query(
         "INSERT INTO electorate_table(DOB,First_name,Last_name, ID_number, County) VALUES(?,?,?,?,?);")
@@ -139,5 +124,4 @@ mod test {
 
         assert_eq!(name, "electorate_table");
     }
->>>>>>> database
 }
