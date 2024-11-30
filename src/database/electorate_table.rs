@@ -64,11 +64,7 @@ async fn elec_table() -> Result<String, String> {
     .await
     .expect("Couldnt exec create table query");
 
-<<<<<<< HEAD
-    println!("--> Create table query result: {:?}", elect_table);
-=======
     println!("--> created electorate table");
->>>>>>> database
     Ok(String::from("--> Created electorate table successfully"))
 }
 
