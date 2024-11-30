@@ -22,14 +22,12 @@ struct Electorate {
     dob: String,
     first_name: String,
     last_name: String,
-    id_number: u64,
+    id_number: i32,
     county: String,
 }
 
 pub fn create_electorate_table() -> Result<String, String> {
-    let db = create_database::create_db();
-
-    match db {
+    match create_database::create_db() {
         Ok(_) => elec_table(),
 
         Err(error) => {
@@ -39,6 +37,11 @@ pub fn create_electorate_table() -> Result<String, String> {
                 Err(String::from("Error met when creating electorate table"))
             }
         }
+    };
+
+    match insert_electorate() {
+        Ok(res) => Ok(String::from(res)),
+        Err(res) => Err(panic!("{}",res)),
     }
 }
 
@@ -48,7 +51,7 @@ async fn elec_table() -> Result<String, String> {
         .await
         .expect("couldnt create pool");
 
-    let elect_table = sqlx::query(
+    let _elect_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS electorate_table(
             ID integer PRIMARY KEY AUTOINCREMENT,
             DOB integer,
@@ -61,28 +64,34 @@ async fn elec_table() -> Result<String, String> {
     .await
     .expect("Couldnt exec create table query");
 
+<<<<<<< HEAD
     println!("--> Create table query result: {:?}", elect_table);
+=======
+    println!("--> created electorate table");
+>>>>>>> database
     Ok(String::from("--> Created electorate table successfully"))
 }
 
-
-/*
 #[tokio::main]
 async fn insert_electorate() -> Result<String, String> {
     let insert_pool = SqlitePool::connect(create_database::DB_PATH)
         .await
         .expect("Could not create insert pool");
 
-    let insert_query = sqlx::query(
+    let seed_data = seed();
+
+    for sd in seed_data {
+        sqlx::query(
         "INSERT INTO electorate_table(DOB,First_name,Last_name, ID_number, County) VALUES(?,?,?,?,?);")
-        .bind().bind().bind().bind().bind()
+        .bind(sd.dob).bind(sd.first_name).bind(sd.last_name).bind(sd.id_number).bind(sd.county)
         .execute(&insert_pool)
         .await
         .expect("Couldnt exec insert query");
-
+    }
+    println!("-- > inserted seed data into electorate");
     Ok(String::from("--> Inserted electorate table successfully"))
 }
-*/
+
 fn seed() -> Vec<Electorate> {
     let citizens = vec![
         Electorate {
@@ -155,8 +164,8 @@ fn seed() -> Vec<Electorate> {
 
 #[cfg(test)]
 mod test {
-    use sqlx::Row;
     use super::*;
+    use sqlx::Row;
 
     // test electorate table exists in db
     #[tokio::test]
@@ -177,5 +186,25 @@ mod test {
         let name = table.get::<String, &str>("name");
 
         assert_eq!(name, "electorate_table");
+    }
+
+    #[tokio::test]
+    async fn test_insert_data() {
+        let db_pool = SqlitePool::connect(create_database::DB_PATH)
+            .await
+            .expect("couldnt create test pool");
+
+        let get_db_data = sqlx::query(
+            "SELECT First_name 
+            FROM electorate_table 
+            WHERE First_name='Dors';",
+        )
+        .fetch_one(&db_pool)
+        .await
+        .expect("Error querying table in db");
+
+        let name = get_db_data.get::<String, &str>("First_name");
+
+        assert_eq!(name, "Dors");
     }
 }
