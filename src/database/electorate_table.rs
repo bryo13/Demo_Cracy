@@ -27,7 +27,7 @@ struct Electorate {
 }
 
 pub fn create_electorate_table() -> Result<String, String> {
-    match create_database::create_db() {
+    let _ = match create_database::create_db() {
         Ok(_) => elec_table(),
 
         Err(error) => {
@@ -41,7 +41,7 @@ pub fn create_electorate_table() -> Result<String, String> {
 
     match insert_electorate() {
         Ok(res) => Ok(String::from(res)),
-        Err(res) => Err(panic!("{}",res)),
+        Err(res) => Err(String::from(res)),
     }
 }
 
@@ -84,7 +84,7 @@ async fn insert_electorate() -> Result<String, String> {
         .await
         .expect("Couldnt exec insert query");
     }
-    println!("-- > inserted seed data into electorate");
+    println!("--> inserted seed data into electorate");
     Ok(String::from("--> Inserted electorate table successfully"))
 }
 
