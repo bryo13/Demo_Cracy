@@ -15,27 +15,40 @@
 ///     2nd prefered count and 3rd prefered count
 ///
 use super::create_database;
-use sqlx::{Row, SqlitePool};
+use sqlx::SqlitePool;
 
-// pub fn create_candidate_table() -> Result<String, String> {}
+pub fn create_candidate_table() -> Result<String, String> {
+    let _ = match create_database::create_db() {
+        Ok(_) => candidates_table(),
+
+        Err(error) => {
+            if error == "Database exists" {
+                candidates_table()
+            } else {
+                Err(String::from("Error met when creating candidates table"))
+            }
+        }
+    };
+    Ok(String::from("--> created candidates table")) 
+}
 
 #[tokio::main]
-async fn candidate_table() -> Result<String, String> {
+async fn candidates_table() -> Result<String, String> {
     let cd_pool = SqlitePool::connect(create_database::DB_PATH)
         .await
         .expect("Couldnt create candidate pool");
 
-    let _candidate_table = sqlx::query(
+    let _candidates_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS candidates_table(
             ID integer PRIMARY KEY AUTOINCREMENT,
             Electorate_ID_number integer);",
     )
     .execute(&cd_pool)
     .await
-    .expect("Couldnt exec create candidate table");
+    .expect("Couldnt exec create candidates table");
 
-    println!("--> created candidate table");
-    Ok(String::from("--> Created candidate table successfully"))
+    println!("--> created candidates table");
+    Ok(String::from("--> Created candidates table successfully"))
 }
 
 // #[tokio::main]
@@ -44,26 +57,28 @@ async fn candidate_table() -> Result<String, String> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use sqlx::Row;
 
     #[tokio::test]
-    async fn test_create_candidate_table_created() {
+    async fn test_create_candidates_table_created() {
         let tb = tokio::task::spawn_blocking(|| {
-            candidate_table()
+            create_candidate_table();
+            candidates_table()
         })
         .await
         .expect("Couldnt init candidates table");
         
         assert!(tb.is_ok());
-        let test_candidate_pool = SqlitePool::connect(create_database::DB_PATH)
+        let test_candidates_pool = SqlitePool::connect(create_database::DB_PATH)
             .await
-            .expect("couldnt create test candidate pool");
+            .expect("couldnt create test candidates pool");
 
         let tables = sqlx::query(
             "SELECT name
                 FROM sqlite_master
                 WHERE type='table' AND name='candidates_table';",
         )
-        .fetch_one(&test_candidate_pool)
+        .fetch_one(&test_candidates_pool)
         .await
         .expect("error getting candidates_table");
 
