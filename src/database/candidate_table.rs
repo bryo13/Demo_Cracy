@@ -29,7 +29,7 @@ pub fn create_candidate_table() -> Result<String, String> {
             }
         }
     };
-    Ok(String::from("--> created candidates table")) 
+    Ok(String::from("--> created candidates table"))
 }
 
 #[tokio::main]
@@ -67,7 +67,7 @@ mod test {
         })
         .await
         .expect("Couldnt init candidates table");
-        
+
         assert!(tb.is_ok());
         let test_candidates_pool = SqlitePool::connect(create_database::DB_PATH)
             .await
@@ -85,5 +85,4 @@ mod test {
         let name = tables.get::<String, &str>("name");
         assert_eq!(name, "candidates_table");
     }
-
 }
