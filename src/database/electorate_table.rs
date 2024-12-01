@@ -1,20 +1,7 @@
-/// electorate_table mod creates the tables that will holCreated electorate table
-/// successfullCreated electorate table successfullyyd
-///     voter data
-/// The data will include:
-///     - DOB
-///     - ID number(defaults to a random 8 digit number)
-///     - First name
-///     - Last name
-///     - Registered county
-///
-/// Additional logic such as the age to vote, set at 18
-///     and the candidate vying for post being present in
-///     of the electorate table will either be dealt here
-///     or in other modules!
-///
-/// Inserting data will also be handled in this module via sample seed
-///     data
+/// Handles all electorate data ops and test
+///     -> creating electorate_table
+///     -> insert seed data into electorate_table
+
 use super::create_database;
 use sqlx::SqlitePool;
 
@@ -27,7 +14,7 @@ struct Electorate {
 }
 
 pub fn create_electorate_table() -> Result<String, String> {
-    match create_database::create_db() {
+    let _ = match create_database::create_db() {
         Ok(_) => elec_table(),
 
         Err(error) => {
@@ -41,7 +28,7 @@ pub fn create_electorate_table() -> Result<String, String> {
 
     match insert_electorate() {
         Ok(res) => Ok(String::from(res)),
-        Err(res) => Err(panic!("{}",res)),
+        Err(res) => Err(String::from(res)),
     }
 }
 
@@ -62,7 +49,7 @@ async fn elec_table() -> Result<String, String> {
     )
     .execute(&db_pool)
     .await
-    .expect("Couldnt exec create table query");
+    .expect("Couldnt exec create electorate table query");
 
     println!("--> created electorate table");
     Ok(String::from("--> Created electorate table successfully"))
@@ -162,6 +149,17 @@ fn seed() -> Vec<Electorate> {
 mod test {
     use super::*;
     use sqlx::Row;
+
+    #[tokio::test]
+    async fn test_create_electorate_table() {
+        let elt = tokio::task::spawn_blocking(|| {
+            create_electorate_table()
+        })
+        .await
+        .expect("Couldnt init electorate table");
+
+        assert!(elt.is_ok());
+    }
 
     // test electorate table exists in db
     #[tokio::test]
