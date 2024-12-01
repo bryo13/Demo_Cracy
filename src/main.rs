@@ -1,7 +1,12 @@
 mod database;
 
+fn db_init() {
+    database::electorate_table::create_electorate_table().unwrap();
+
+    database::candidate_table::create_candidate_table().unwrap();
+
+}
+
 fn main() {
-    // database::create_database::create_db();
-    database::electorate_table::create_electorate_table()
-        .expect("Couldnt create or insert data to electorate");
+    db_init()
 }

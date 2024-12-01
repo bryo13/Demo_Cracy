@@ -9,8 +9,9 @@ pub async fn create_db() -> Result<String, String> {
         Sqlite::create_database(DB_PATH)
             .await
             .expect("Couldnt create db");
+        println!("--> Database created");
     } else {
-        println!("--> Db exists");
+        println!("--> Database exists");
     }
     Ok(String::from("Database ready"))
 }

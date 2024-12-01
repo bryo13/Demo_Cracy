@@ -29,6 +29,8 @@ pub fn create_candidate_table() -> Result<String, String> {
             }
         }
     };
+    insert_candidate().unwrap();
+
     Ok(String::from("--> created candidates table"))
 }
 
@@ -41,16 +43,16 @@ async fn candidates_table() -> Result<String, String> {
     let _candidates_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS candidates_table(
             ID integer PRIMARY KEY AUTOINCREMENT,
-            Electorate_ID_number integer);",
+            Electorate_ID_number integer UNIQUE);",
     )
     .execute(&cd_pool)
     .await
     .expect("Couldnt exec create candidate table");
-
-    println!("--> created candidate table");
+    println!("--> Created candidate table successfully");
     Ok(String::from("--> Created candidate table successfully"))
 }
 
+/*
 #[tokio::main]
 async fn get_candidates() -> Result<Vec<i32>, String> {
     // There are three main power players
@@ -75,29 +77,40 @@ async fn get_candidates() -> Result<Vec<i32>, String> {
     }
     Ok(cands)
 }
-
+*/
 #[tokio::main]
 async fn insert_candidate() -> Result<String, String> {
     let candidate_insert_pool = SqlitePool::connect(create_database::DB_PATH)
         .await
         .expect("Could not create candidates insert pool");
 
-    match get_candidates() {
-        Ok(cds) => {
-            for c in cds {
-                sqlx::query(
-                    "
-                INSERT INTO candidates_table(Electorate_ID_numbe)
-                VALUES(?);",
-                )
-                .bind(c)
-                .execute(&candidate_insert_pool)
-                .await
-                .expect("couldnt insert the candidates");
-            }
-        }
-        Err(e) => Err(String::from(e)),
+    let cnds = sqlx::query(
+        "SELECT ID_number FROM electorate_table
+            WHERE First_name in ('Rashelle','Cleon','Mannix')
+            LIMIT 3;",
+    )
+    .fetch_all(&candidate_insert_pool)
+    .await
+    .expect("Couldnt get candidates ID numbers");
+
+    let mut cands: Vec<i32> = Vec::new();
+    for c in cnds {
+        let id: i32 = c.get("ID_number");
+        cands.push(id)
     }
+
+    for c in cands {
+        sqlx::query(
+            "INSERT OR IGNORE INTO candidates_table(Electorate_ID_number)
+                VALUES(?);",
+        )
+        .bind(c)
+        .execute(&candidate_insert_pool)
+        .await
+        .expect("couldnt insert the candidates");
+    }
+    println!("--> Inserted candidates");
+    Ok(String::from("Inserted candidates"))
 }
 
 #[cfg(test)]

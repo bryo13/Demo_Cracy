@@ -42,7 +42,7 @@ async fn elec_table() -> Result<String, String> {
     .await
     .expect("Couldnt exec create electorate table query");
 
-    println!("--> created electorate table");
+    println!("--> Created electorate table");
     Ok(String::from("--> Created electorate table successfully"))
 }
 
@@ -62,7 +62,7 @@ async fn insert_electorate() -> Result<String, String> {
         .await
         .expect("Couldnt exec insert query");
     }
-    println!("--> inserted seed data into electorate");
+    println!("--> Inserted seed data into electorate");
     Ok(String::from("--> Inserted electorate table successfully"))
 }
 
