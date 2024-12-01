@@ -45,14 +45,14 @@ async fn candidates_table() -> Result<String, String> {
     )
     .execute(&cd_pool)
     .await
-    .expect("Couldnt exec create candidates table");
+    .expect("Couldnt exec create candidate table");
 
-    println!("--> created candidates table");
-    Ok(String::from("--> Created candidates table successfully"))
+    println!("--> created candidate table");
+    Ok(String::from("--> Created candidate table successfully"))
 }
 
-#[tokio::main]
-async fn insert_candidate() -> Result<String, String> {}
+// #[tokio::main]
+// async fn insert_candidate() -> Result<String, String> {}
 
 #[cfg(test)]
 mod test {
