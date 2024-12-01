@@ -1,10 +1,8 @@
 /// Handles all electorate data ops and test
 ///     -> creating electorate_table
 ///     -> insert seed data into electorate_table
-
 use super::{create_database, electorate_seed};
 use sqlx::SqlitePool;
-
 
 pub fn create_electorate_table() -> Result<String, String> {
     let _ = match create_database::create_db() {
@@ -75,11 +73,9 @@ mod test {
 
     #[tokio::test]
     async fn test_create_electorate_table() {
-        let elt = tokio::task::spawn_blocking(|| {
-            create_electorate_table()
-        })
-        .await
-        .expect("Couldnt init electorate table");
+        let elt = tokio::task::spawn_blocking(|| create_electorate_table())
+            .await
+            .expect("Couldnt init electorate table");
 
         assert!(elt.is_ok());
     }
