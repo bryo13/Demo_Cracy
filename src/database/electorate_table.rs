@@ -2,16 +2,9 @@
 ///     -> creating electorate_table
 ///     -> insert seed data into electorate_table
 
-use super::create_database;
+use super::{create_database, electorate_seed};
 use sqlx::SqlitePool;
 
-struct Electorate {
-    dob: String,
-    first_name: String,
-    last_name: String,
-    id_number: i32,
-    county: String,
-}
 
 pub fn create_electorate_table() -> Result<String, String> {
     let _ = match create_database::create_db() {
@@ -61,7 +54,7 @@ async fn insert_electorate() -> Result<String, String> {
         .await
         .expect("Could not create insert pool");
 
-    let seed_data = seed();
+    let seed_data = electorate_seed::seed();
 
     for sd in seed_data {
         sqlx::query(
@@ -73,76 +66,6 @@ async fn insert_electorate() -> Result<String, String> {
     }
     println!("--> inserted seed data into electorate");
     Ok(String::from("--> Inserted electorate table successfully"))
-}
-
-fn seed() -> Vec<Electorate> {
-    let citizens = vec![
-        Electorate {
-            dob: "1943-02-22".to_string(),
-            first_name: "Dors".to_string(),
-            last_name: "Venabili".to_string(),
-            id_number: 23422345,
-            county: "Uni".to_string(),
-        },
-        Electorate {
-            dob: "1943-11-21".to_string(),
-            first_name: "Eto".to_string(),
-            last_name: "Demerizel".to_string(),
-            id_number: 35343463,
-            county: "Terminus".to_string(),
-        },
-        Electorate {
-            dob: "1982-01-02".to_string(),
-            first_name: "Rashelle".to_string(),
-            last_name: "I".to_string(),
-            id_number: 6546347,
-            county: "Wye".to_string(),
-        },
-        Electorate {
-            dob: "1929-12-04".to_string(),
-            first_name: "Mannix".to_string(),
-            last_name: "IV".to_string(),
-            id_number: 90242523,
-            county: "Wye".to_string(),
-        },
-        Electorate {
-            dob: "1974-02-22".to_string(),
-            first_name: "Emmer".to_string(),
-            last_name: "Thalus".to_string(),
-            id_number: 82344869,
-            county: "Wye".to_string(),
-        },
-        Electorate {
-            dob: "2017-10-17".to_string(),
-            first_name: "Raych".to_string(),
-            last_name: "I".to_string(),
-            id_number: 9934521,
-            county: "Dahl".to_string(),
-        },
-        Electorate {
-            dob: "1978-02-12".to_string(),
-            first_name: "Davan".to_string(),
-            last_name: "I".to_string(),
-            id_number: 45238903,
-            county: "Dahl".to_string(),
-        },
-        Electorate {
-            dob: "1969-02-22".to_string(),
-            first_name: "Cleon".to_string(),
-            last_name: "I".to_string(),
-            id_number: 6743434,
-            county: "Terminus".to_string(),
-        },
-        Electorate {
-            dob: "1968-02-22".to_string(),
-            first_name: "Hari".to_string(),
-            last_name: "Seldon".to_string(),
-            id_number: 31415926,
-            county: "Terminus".to_string(),
-        },
-    ];
-
-    citizens
 }
 
 #[cfg(test)]
