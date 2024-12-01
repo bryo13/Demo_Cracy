@@ -1,5 +1,4 @@
 /target
 Cargo.lock
-cracy.db-wal
 cracy.db
-cracy.db-shm
+cracy.db*
