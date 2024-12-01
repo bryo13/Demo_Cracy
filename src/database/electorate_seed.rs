@@ -28,7 +28,7 @@ pub fn seed() -> Vec<Electorate> {
             dob: "1982-01-02".to_string(),
             first_name: "Rashelle".to_string(),
             last_name: "I".to_string(),
-            id_number: 6546347,
+            id_number: 65463474,
             county: "Wye".to_string(),
         },
         Electorate {
@@ -49,7 +49,7 @@ pub fn seed() -> Vec<Electorate> {
             dob: "2017-10-17".to_string(),
             first_name: "Raych".to_string(),
             last_name: "I".to_string(),
-            id_number: 9934521,
+            id_number: 99934521,
             county: "Dahl".to_string(),
         },
         Electorate {
@@ -63,7 +63,7 @@ pub fn seed() -> Vec<Electorate> {
             dob: "1969-02-22".to_string(),
             first_name: "Cleon".to_string(),
             last_name: "I".to_string(),
-            id_number: 6743434,
+            id_number: 67434345,
             county: "Terminus".to_string(),
         },
         Electorate {
