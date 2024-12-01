@@ -15,7 +15,7 @@
 ///     2nd prefered count and 3rd prefered count
 ///
 use super::create_database;
-use sqlx::{Row, SqlitePool};
+use sqlx::SqlitePool;
 
 pub fn create_candidate_table() -> Result<String, String> {
     let _ = match create_database::create_db() {
@@ -45,38 +45,14 @@ async fn candidates_table() -> Result<String, String> {
     )
     .execute(&cd_pool)
     .await
-    .expect("Couldnt exec create candidates table");
+    .expect("Couldnt exec create candidate table");
 
-    match get_candidates() {}
+    println!("--> created candidate table");
+    Ok(String::from("--> Created candidate table successfully"))
 }
 
-#[tokio::main]
-async fn insert_candidate() -> Result<String, String> {}
-
-
-#[tokio::main]
-async fn get_candidates() -> Result<Vec<i32>, String> {
-    // There are three main power players 
-    // Rashelle, Cleon and Mannix
-    let cd_pool = SqlitePool::connect(create_database::DB_PATH)
-    .await
-    .expect("Couldnt create candidate pool");
-
-    let cnds = sqlx::query(
-        "SELECT ID_number FROM 'electorate_table'
-        WHERE First_name in ('Rashelle','Cleon','Mannix')
-        LIMIT=3;")
-    .fetch_all(&cd_pool)
-    .await
-    .expect("Couldnt get candidates ID numbers");
-
-    let mut cands: Vec<i32> = Vec::new();
-    for c in cnds {
-        let id: i32 = c.get("ID_number");
-        cands.push(id)
-    }
-    Ok(cands)
-}
+// #[tokio::main]
+// async fn insert_candidate() -> Result<String, String> {}
 
 #[cfg(test)]
 mod test {
