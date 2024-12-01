@@ -1,11 +1,11 @@
 /// Holds part of foundation electorate data
 
 pub struct Electorate {
-    pub dob: String,
-    pub first_name: String,
-    pub last_name: String,
-    pub id_number: i32,
-    pub county: String,
+    pub dob: String,        // holds date of birth
+    pub first_name: String, // Electorate's first name
+    pub last_name: String,  // Electorate's last name
+    pub id_number: i32,     // Electorate's ID no
+    pub county: String,     // Electorate's county
 }
 
 pub fn seed() -> Vec<Electorate> {
