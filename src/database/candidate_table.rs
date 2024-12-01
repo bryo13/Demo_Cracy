@@ -53,16 +53,17 @@ async fn candidates_table() -> Result<String, String> {
 
 #[tokio::main]
 async fn get_candidates() -> Result<Vec<i32>, String> {
-    // There are three main power players 
+    // There are three main power players
     // Rashelle, Cleon and Mannix
     let cd_pool = SqlitePool::connect(create_database::DB_PATH)
-    .await
-    .expect("Couldnt create candidate pool");
+        .await
+        .expect("Couldnt create candidate pool");
 
     let cnds = sqlx::query(
         "SELECT ID_number FROM 'electorate_table'
         WHERE First_name in ('Rashelle','Cleon','Mannix')
-        LIMIT=3;")
+        LIMIT=3;",
+    )
     .fetch_all(&cd_pool)
     .await
     .expect("Couldnt get candidates ID numbers");
@@ -74,8 +75,30 @@ async fn get_candidates() -> Result<Vec<i32>, String> {
     }
     Ok(cands)
 }
-// #[tokio::main]
-// async fn insert_candidate() -> Result<String, String> {}
+
+#[tokio::main]
+async fn insert_candidate() -> Result<String, String> {
+    let candidate_insert_pool = SqlitePool::connect(create_database::DB_PATH)
+        .await
+        .expect("Could not create candidates insert pool");
+
+    match get_candidates() {
+        Ok(cds) => {
+            for c in cds {
+                sqlx::query(
+                    "
+                INSERT INTO candidates_table(Electorate_ID_numbe)
+                VALUES(?);",
+                )
+                .bind(c)
+                .execute(&candidate_insert_pool)
+                .await
+                .expect("couldnt insert the candidates");
+            }
+        }
+        Err(e) => Err(String::from(e)),
+    }
+}
 
 #[cfg(test)]
 mod test {
