@@ -1,6 +1,4 @@
 # Cracy
-This is an application that simuates an election process in rust.
-
 There is political tension brewing in Terminus.  
 Cleon the first is struggling to keep the empire from crumbling.  
 Mannix IV and her daughter Rashelle are determined to expoit the  
