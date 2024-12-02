@@ -1,4 +1,4 @@
-mod create_database;
+pub mod create_database;
 mod electorate_seed;
 mod electorate_table;
 mod candidate_table;

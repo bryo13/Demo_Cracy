@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 data = {path = "./data"}
+voting = {path = "./voting"}
 
 [workspace]
 members = [
