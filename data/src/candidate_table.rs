@@ -14,7 +14,7 @@
 /// Candidate will include electorate details, 1st prefered count,
 ///     2nd prefered count and 3rd prefered count
 ///
-use super::create_database;
+use crate::create_database;
 use sqlx::{Row, SqlitePool};
 
 pub fn create_candidate_table() -> Result<String, String> {

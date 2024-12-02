@@ -1,7 +1,9 @@
 /// Handles all electorate data ops and test
 ///     -> creating electorate_table
 ///     -> insert seed data into electorate_table
-use super::{create_database, electorate_seed};
+use crate::create_database;
+use crate::electorate_seed;
+
 use sqlx::SqlitePool;
 
 pub fn create_electorate_table() -> Result<String, String> {
