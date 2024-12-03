@@ -14,7 +14,7 @@ pub fn create_votes_table() -> Result<String, String> {
             }
         }
     };
-    println!("--> Created votes table successfully");
+
     Ok(String::from("--> Created votes table successfully"))
 }
 
@@ -63,15 +63,19 @@ async fn voting_table() -> Result<String, String> {
         .await
         .expect("Couldnt create votes pool");
 
-    let _create_votes_table = sqlx::query(
-        "CREATE TABLE IF NOT EXISTS 
-        votes_table(ID integer PRIMARY KEY AUTOINCREMENT,
-        Rashelle integer,Mannix integer,Cleon integer);",
-    )
-    .execute(&votes_pool)
-    .await
-    .expect("Couldnt create voters table");
-
+        let create_votes_table = sqlx::query(
+            "CREATE TABLE IF NOT EXISTS votes_table(
+                ID integer PRIMARY KEY AUTOINCREMENT,
+                voter_ID integer UNIQUE,
+                Rashelle integer,
+                Mannix integer,
+                Cleon integer,
+                County varchar(256));",
+        )
+        .execute(&votes_pool)
+        .await
+        .expect("Couldnt exec create votes table query");
+    println!("--> Created votes table: {:?}", create_votes_table);
     Ok(String::from("--> Created votes table successfully"))
 }
 
@@ -93,7 +97,7 @@ mod test {
         )
         .fetch_one(&db_pool)
         .await
-        .expect("Error querying table in db");
+        .expect("Error querying votes table in db");
 
         let name = table.get::<String, &str>("name");
 
