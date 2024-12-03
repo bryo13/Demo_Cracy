@@ -1,8 +1,7 @@
 /// create voting table with the columns holding
 /// the candidates and voters_ID
 use crate::create_database;
-use sqlx::{Row, SqlitePool};
-
+use sqlx::SqlitePool;
 
 pub fn create_votes_table() -> Result<String, String> {
     let _ = match create_database::create_db() {
@@ -17,7 +16,6 @@ pub fn create_votes_table() -> Result<String, String> {
     };
     println!("--> Created votes table successfully");
     Ok(String::from("--> Created votes table successfully"))
-    
 }
 
 /* gets the IDs of the candidates into a vector
@@ -70,9 +68,35 @@ async fn voting_table() -> Result<String, String> {
         votes_table(ID integer PRIMARY KEY AUTOINCREMENT,
         Rashelle integer,Mannix integer,Cleon integer);",
     )
-        .execute(&votes_pool)
-        .await
-        .expect("Couldnt create voters table");
+    .execute(&votes_pool)
+    .await
+    .expect("Couldnt create voters table");
 
     Ok(String::from("--> Created votes table successfully"))
+}
+
+mod test {
+    use super::*;
+    use sqlx::Row;
+
+    // test votes table exists in db
+    #[tokio::test]
+    async fn test_votes_table() {
+        let db_pool = SqlitePool::connect(create_database::DB_PATH)
+            .await
+            .expect("couldnt create test pool");
+
+        let table = sqlx::query(
+            "SELECT name 
+            FROM sqlite_master 
+            WHERE type='table' AND name='votes_table';",
+        )
+        .fetch_one(&db_pool)
+        .await
+        .expect("Error querying table in db");
+
+        let name = table.get::<String, &str>("name");
+
+        assert_eq!(name, "votes_table");
+    }
 }
