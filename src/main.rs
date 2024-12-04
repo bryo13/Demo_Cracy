@@ -6,6 +6,7 @@ static DB_ONCE: Once = Once::new();
 
 // ensure database is only initialized once
 // by checking SQLite db exists and the init_db runs only once
+// prevents violation of UNIQUE property inserting seed data
 fn init_tables() {
     let files = fs::read_dir("./").unwrap();
 
