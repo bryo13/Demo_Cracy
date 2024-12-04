@@ -79,6 +79,7 @@ async fn voting_table() -> Result<String, String> {
     Ok(String::from("--> Created votes table successfully"))
 }
 
+#[cfg(test)]
 mod test {
     use super::*;
     use sqlx::Row;
