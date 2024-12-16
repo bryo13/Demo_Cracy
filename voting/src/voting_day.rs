@@ -8,11 +8,10 @@
 ///  -> For the prefered candidate, they recieve a total of the number of candidates,
 ///     i.e if there are three candidates, an electorate's fav candidate will recieve
 ///     3 points, the 2nd prefered candidate 2 and the least prefered candidate 1.
-
+use chrono::NaiveDate;
 use data::create_database::DB_PATH;
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 use std::io;
-use chrono::NaiveDate;
 
 const VOTING_DATE: &str = "2024-11-05";
 
@@ -34,7 +33,6 @@ async fn electorate_details() -> Result<SqliteRow, sqlx::Error> {
     .await?;
 
     Ok(query_user)
-
 }
 
 fn valid_age(details: Result<SqliteRow, sqlx::Error>) -> bool {
@@ -59,22 +57,22 @@ fn valid_age(details: Result<SqliteRow, sqlx::Error>) -> bool {
 // checking if they are part of the candidates' table
 async fn candidate_present(firstname: String) -> bool {
     let query_pool = SqlitePool::connect(create_database::DB_PATH)
-    .await
-    .expect("Could not create get candidate pool");
+        .await
+        .expect("Could not create get candidate pool");
 
-let cnds = sqlx::query(
-    "SELECT et.First_name, ct.Electorate_ID_number
+    let cnds = sqlx::query(
+        "SELECT et.First_name, ct.Electorate_ID_number
     FROM electorate_table as et
     INNER JOIN candidates_table as ct
     ON ct.Electorate_ID_number = et.ID_number
     where et.First_name = ?;",
-    firstname,
-)
-.fetch_one(&query_pool)
-.await;
+        firstname,
+    )
+    .fetch_one(&query_pool)
+    .await;
 
-match cnds {
-    Ok(_) => return true,
-    Err(_) => return false,
-};
+    match cnds {
+        Ok(_) => return true,
+        Err(_) => return false,
+    };
 }
