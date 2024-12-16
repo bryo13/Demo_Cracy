@@ -54,3 +54,27 @@ fn valid_age(details: Result<SqliteRow, sqlx::Error>) -> bool {
     }
     return false;
 }
+
+// confirm the voter chooses a valid candidate
+// checking if they are part of the candidates' table
+async fn candidate_present(firstname: String) -> bool {
+    let query_pool = SqlitePool::connect(create_database::DB_PATH)
+    .await
+    .expect("Could not create get candidate pool");
+
+let cnds = sqlx::query(
+    "SELECT et.First_name, ct.Electorate_ID_number
+    FROM electorate_table as et
+    INNER JOIN candidates_table as ct
+    ON ct.Electorate_ID_number = et.ID_number
+    where et.First_name = ?;",
+    firstname,
+)
+.fetch_one(&query_pool)
+.await;
+
+match cnds {
+    Ok(_) => return true,
+    Err(_) => return false,
+};
+}
