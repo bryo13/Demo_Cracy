@@ -1,7 +1,7 @@
+mod candidate_table;
 pub mod create_database;
 mod electorate_seed;
 mod electorate_table;
-mod candidate_table;
 mod voting_table;
 
 pub fn db_init() {
