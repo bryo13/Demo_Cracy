@@ -1,0 +1,1 @@
+/// Computation that handles results of a voting day
