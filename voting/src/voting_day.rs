@@ -16,13 +16,8 @@ use std::io;
 const VOTING_DATE: &str = "2024-11-05";
 
 #[tokio::main]
-async fn electorate_details() -> Result<SqliteRow, sqlx::Error> {
+async fn electorate_details(id_number: String) -> Result<SqliteRow, sqlx::Error> {
     let voting_pool = SqlitePool::connect(DB_PATH).await?;
-
-    let mut id_number: String = String::new();
-    io::stdin()
-        .read_line(&mut id_number)
-        .expect("couldnt read user ID");
 
     let query_user = sqlx::query(
         "SELECT * FROM electorate_table 
@@ -48,7 +43,7 @@ fn valid_age(details: Result<SqliteRow, sqlx::Error>) -> bool {
                 return true;
             }
         }
-        Err(e) => fprintln!("{:?}", err),
+        Err(e) => eprintln!("{:?}", e),
     }
     return false;
 }
@@ -56,7 +51,7 @@ fn valid_age(details: Result<SqliteRow, sqlx::Error>) -> bool {
 // confirm the voter chooses a valid candidate
 // checking if they are part of the candidates' table
 async fn candidate_present(firstname: String) -> bool {
-    let query_pool = SqlitePool::connect(create_database::DB_PATH)
+    let query_pool = SqlitePool::connect(DB_PATH)
         .await
         .expect("Could not create get candidate pool");
 
@@ -66,8 +61,8 @@ async fn candidate_present(firstname: String) -> bool {
     INNER JOIN candidates_table as ct
     ON ct.Electorate_ID_number = et.ID_number
     where et.First_name = ?;",
-        firstname,
     )
+    .bind(firstname)
     .fetch_one(&query_pool)
     .await;
 
@@ -75,4 +70,21 @@ async fn candidate_present(firstname: String) -> bool {
         Ok(_) => return true,
         Err(_) => return false,
     };
+}
+
+pub fn prep_voting() {
+    println!("Enter your ID number");
+    let mut id_number: String = String::new();
+    io::stdin()
+        .read_line(&mut id_number)
+        .expect("couldnt read user ID");
+   
+    let details = electorate_details(id_number);
+    
+    if valid_age(Ok(details.unwrap())) {
+        println!("Enter your prefered candidate");
+    } else {
+        println!("Cant vote");
+    }
+   
 }
