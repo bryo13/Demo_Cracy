@@ -11,9 +11,16 @@
 use chrono::NaiveDate;
 use data::create_database::DB_PATH;
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
-use std::{collections::HashMap,io};
+use std::{collections::HashMap, io};
 
 const VOTING_DATE: &str = "2024-11-05";
+
+#[derive(Debug)]
+struct Preference {
+    first_pref: String,
+    sec_pref: String,
+    third_pref: String,
+}
 
 #[tokio::main]
 async fn electorate_details(id_number: String) -> Result<SqliteRow, sqlx::Error> {
@@ -70,4 +77,80 @@ async fn candidate_present(firstname: String) -> bool {
         Ok(_) => return true,
         Err(_) => return false,
     };
+}
+
+// map containing candidates
+fn candidate_map() -> HashMap<String, String> {
+    let mut map = HashMap::new();
+    map.insert(String::from("1"), String::from("Mannix"));
+    map.insert(String::from("2"), String::from("Rashelle"));
+    map.insert(String::from("3"), String::from("Cleon"));
+    return map;
+}
+
+// get prefered candidates
+// to refactor
+fn get_pref() -> Preference {
+    let mut candidates = candidate_map();
+    let mut preference: Preference = Preference {
+        first_pref: String::new(),
+        sec_pref: String::new(),
+        third_pref: String::new(),
+    };
+    println!("Enter your prefered candidate from 1,2,3");
+    println!("{:#?}", candidates);
+
+    let mut first = String::new();
+    io::stdin()
+        .read_line(&mut first)
+        .expect("Cant read first pref");
+
+    let pref = first.trim();
+
+    if !candidates.contains_key(pref) {
+        println!("Please choose from the numbers 1,2,3");
+        get_pref();
+    }
+    if let Some(rem) = candidates.remove(pref) {
+        println!("Your first prefered candidate is {:#?}", rem);
+        preference.first_pref = rem
+    }
+
+    println!("Enter your prefered candidate");
+    println!("{:#?}", candidates);
+    let mut two = String::new();
+    io::stdin()
+        .read_line(&mut two)
+        .expect("Cant read second prefered");
+
+    let pref_two = two.trim();
+
+    if !candidates.contains_key(pref_two) {
+        println!("Please choose a candidate from the list");
+        get_pref();
+    }
+    if let Some(rem) = candidates.remove(pref_two) {
+        println!("your second prefered candidate is: {:#?} ", rem);
+        preference.sec_pref = rem
+    }
+
+    for val in candidates.values() {
+        preference.third_pref = val.to_string();
+    }
+    return preference;
+}
+
+pub fn vote() {
+    println!("Enter your ID number");
+    let mut id = String::new();
+    io::stdin().read_line(&mut id).expect("Cant read id number");
+    let person = electorate_details(id);
+    match person {
+        Ok(electorate) => {
+            if valid_age(Ok(electorate)) {
+                get_pref();
+            }
+        }
+        Err(e) => eprintln!("Error {:#?}", e),
+    }
 }
