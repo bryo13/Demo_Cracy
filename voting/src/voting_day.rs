@@ -137,6 +137,7 @@ fn get_pref() -> Preference {
     for val in candidates.values() {
         preference.third_pref = val.to_string();
     }
+    println!("Your {:#?}",preference);
     return preference;
 }
 
