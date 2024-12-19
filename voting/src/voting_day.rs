@@ -11,7 +11,7 @@
 use chrono::NaiveDate;
 use data::create_database::DB_PATH;
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
-use std::io;
+use std::{collections::HashMap,io};
 
 const VOTING_DATE: &str = "2024-11-05";
 
@@ -50,7 +50,6 @@ fn valid_age(details: Result<SqliteRow, sqlx::Error>) -> bool {
 
 // confirm the voter chooses a valid candidate
 // checking if they are part of the candidates' table
-#[tokio::main]
 async fn candidate_present(firstname: String) -> bool {
     let query_pool = SqlitePool::connect(DB_PATH)
         .await
@@ -71,61 +70,4 @@ async fn candidate_present(firstname: String) -> bool {
         Ok(_) => return true,
         Err(_) => return false,
     };
-}
-
-// get prefered candidate
-#[tokio::main]
-async fn get_pref() -> String {
-    candidates_number();
-    let mut pref: String = String::new();
-    io::stdin()
-        .read_line(&mut pref)
-        .expect("Cant read prefered candidate");
-
-    cancel_choice(&mut pref);
-    return pref
-}
-
-pub fn prep_voting() {
-    println!("Enter your ID number");
-    let mut id_number: String = String::new();
-    io::stdin()
-        .read_line(&mut id_number)
-        .expect("couldnt read user ID");
-
-    let details = electorate_details(id_number);
-
-    if valid_age(Ok(details.unwrap())) {
-        get_pref();
-    } else {
-        println!("Cant vote");
-    }
-}
-
-#[tokio::main]
-async fn vote() {}
-
-fn candidates_number() {
-    println!("Enter your prefered candidate by entering the number next to the candidate");
-    println!("
-        1 :Mannix \n
-        2 :Cleon \n
-        3 :Rashelle \n
-    ");
-}
-
-fn cancel_choice(name: &mut String) {
-    println!("Is {} your choosen candidate", name.trim());
-    println!("If not, type no");
-
-    let mut cancel: String = String::new();
-    io::stdin()
-        .read_line(&mut cancel)
-        .expect("couldnt read cancel command");
-
-    if cancel.trim().to_lowercase() == "no" {
-        println!("Canceling candidate selection");
-    } else {
-        println!("Next candidate");
-    }
 }
