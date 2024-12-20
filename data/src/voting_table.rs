@@ -66,7 +66,7 @@ async fn voting_table() -> Result<String, String> {
     let create_votes_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS votes_table(
                 ID integer PRIMARY KEY AUTOINCREMENT,
-                voter_ID integer UNIQUE,
+                voter_ID text  UNIQUE,
                 Rashelle integer,
                 Mannix integer,
                 Cleon integer,

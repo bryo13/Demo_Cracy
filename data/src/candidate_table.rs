@@ -43,7 +43,7 @@ async fn candidates_table() -> Result<String, String> {
     let _candidates_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS candidates_table(
             ID integer PRIMARY KEY AUTOINCREMENT,
-            Electorate_ID_number integer UNIQUE);",
+            Electorate_ID_number text UNIQUE);",
     )
     .execute(&cd_pool)
     .await
@@ -93,9 +93,9 @@ async fn insert_candidate() -> Result<String, String> {
     .await
     .expect("Couldnt get candidates ID numbers");
 
-    let mut cands: Vec<i32> = Vec::new();
+    let mut cands: Vec<String> = Vec::new();
     for c in cnds {
-        let id: i32 = c.get("ID_number");
+        let id: String = c.get("ID_number");
         cands.push(id)
     }
 

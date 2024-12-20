@@ -37,7 +37,7 @@ async fn elec_table() -> Result<String, String> {
             DOB integer,
             First_name varchar(255),
             Last_name varchar(255),
-            ID_number long UNIQUE,
+            ID_number text UNIQUE,
             County varchar(256));",
     )
     .execute(&db_pool)
