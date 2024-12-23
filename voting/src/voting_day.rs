@@ -7,7 +7,7 @@
 ///     Then their less prefered candidate until all candidates are captured.
 ///  -> For the prefered candidate, they recieve a total of the number of candidates,
 ///     i.e if there are three candidates, an electorate's fav candidate will recieve
-///     3 points, the 2nd prefered candidate 2 and the least prefered candidate 1.
+///     5 points, the 2nd prefered candidate 3 and the least prefered candidate 1.
 use chrono::NaiveDate;
 use data::create_database::DB_PATH;
 use serde::Serialize;

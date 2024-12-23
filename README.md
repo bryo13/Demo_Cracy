@@ -12,10 +12,13 @@ Just long enough.
 ## Rules set out for the election
 - A person would choose their prefered candidate
 - Their less prefered candidate and so on until their least prefered candidate
-- To try and prevent spoilt votes, the electorate would have to go through all candidates in order in order for the votes to count.
+- To try and prevent spoilt votes, the electorate would have to go through all candidates in order  for the votes to count.
 - The total tally of the votes would determine the winner.  
-and should hold 50 + 1 % of the votes cast.
+and should hold 50 + 1 % of the votes cast. i.e more than half the electorate choose the candidate as their prefered candidate
 
+## Sample seed data
+Since for one to vote, data already in the db would be required, specifically electorate's ID number 
+![seed](pics/seed.png)
 ## Running
 Adding the deps in Cargo.toml in your system should do the trick
 i.e
