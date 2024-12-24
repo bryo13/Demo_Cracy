@@ -3,7 +3,7 @@
 /// -> create results table that holds vote count
 /// ->  and percentages
 use data::create_database::DB_PATH;
-use sqlx::{SqlitePool, Row};
+use sqlx::{Row, SqlitePool};
 
 #[derive(Debug)]
 pub struct ElectionResult {
@@ -43,7 +43,7 @@ pub async fn count() -> ElectionResult {
     .fetch_all(&count_pool)
     .await
     .expect("cant get sum of candidates");
-    
+
     let mut cleon_sum: i64 = 0;
     let mut mannix_sum: i64 = 0;
     let mut rashelle_sum: i64 = 0;
