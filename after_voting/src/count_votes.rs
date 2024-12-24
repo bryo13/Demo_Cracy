@@ -1,7 +1,9 @@
 /// basically calling SUM() on all columns of votes_table
 /// Calc percentage of all candidates
 /// -> create results table that holds vote count
-/// ->  and percentages
+
+/// The winner is the first candidate gets to greater than 
+/// (all electorate / 2) * 5
 use data::create_database::DB_PATH;
 use sqlx::{Row, SqlitePool};
 
@@ -36,10 +38,8 @@ pub async fn count() -> ElectionResult {
         .expect("cant create voter count pool");
 
     let sum_query = sqlx::query(
-        "
-        SELECT SUM(Rashelle) as rashelle, SUM(Mannix) as mannix, SUM(Cleon) as cleon
-        FROM votes_table;
-    ",
+        "SELECT SUM(Rashelle) as rashelle, SUM(Mannix) as mannix, SUM(Cleon) as cleon
+        FROM votes_table;",
     )
     .fetch_all(&count_pool)
     .await
@@ -61,7 +61,26 @@ pub async fn count() -> ElectionResult {
     };
 }
 
-// fn calc_percentage()
+#[tokio::main]
+async fn find_winner() {
+    let count_pool = SqlitePool::connect(DB_PATH).await?;
+
+    // find count of electorate
+    let count = sqlx::query("
+    SELECT COUNT(ID_number) AS count 
+    FROM "electorate_table"; 
+    ")
+    .fetch(&count_pool)
+    .await
+    .expect("couldnt count all electorate");
+
+    // calc winning number
+    let count: i32 = count.get("count");
+
+    let half = (count as f64 / 2.0).ceil() as i64;
+    let threshold = half * 5 ;
+    // find winner
+}
 
 #[cfg(test)]
 mod tests {
