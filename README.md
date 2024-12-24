@@ -18,7 +18,7 @@ and should hold 50 + 1 % of the votes cast. i.e more than half the electorate ch
 
 ## Sample seed data
 Since for one to vote, data already in the db would be required, specifically electorate's ID number 
-![seed](pics/seed.png)
+![seed](assets/seed.png)
 ## Running
 Adding the deps in Cargo.toml in your system should do the trick
 i.e
