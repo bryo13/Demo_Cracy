@@ -4,7 +4,7 @@ pub struct Electorate {
     pub dob: String,        // holds date of birth
     pub first_name: String, // Electorate's first name
     pub last_name: String,  // Electorate's last name
-    pub id_number: String,     // Electorate's ID no
+    pub id_number: String,  // Electorate's ID no
     pub county: String,     // Electorate's county
 }
 

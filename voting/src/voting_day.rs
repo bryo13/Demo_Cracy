@@ -222,9 +222,7 @@ async fn update_votes(electorate_details: Result<SqliteRow, sqlx::Error>) {
 pub fn vote() {
     println!("Enter your ID number");
     let mut id = String::new();
-    io::stdin()
-        .read_line(&mut id)
-        .expect("Cant read id number");
+    io::stdin().read_line(&mut id).expect("Cant read id number");
 
     let person = electorate_details(id);
     match person {

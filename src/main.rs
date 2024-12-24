@@ -1,5 +1,5 @@
-use {data, voting};
 use std::{fs, sync::Once};
+use {data, voting};
 
 static DB_ONCE: Once = Once::new();
 
