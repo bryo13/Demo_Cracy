@@ -19,12 +19,13 @@ async fn create_results_table() -> Result<String, sqlx::Error> {
     let _results_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS results(
             ID integer PRIMARY KEY AUTOINCREMENT,
-            votes_sum integer,
-            votes_percentage integer,
-        );",
+            candidate_name text UNIQUE,
+            voter_sum integer,
+            voter_percentage integer);",
     )
     .execute(&results_pool)
     .await?;
+
     Ok(String::from("Created results table"))
 }
 
@@ -68,11 +69,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_results_table() {
-        let rt = tokio::task::spawn_blocking(|| {
-            data::create_database::create_db();
-            create_results_table();
-        })
-        .await
-        .expect("error init result tests");
+        let rt = tokio::task::spawn_blocking(|| 
+            create_results_table())
+            .await
+            .expect("Couldnt init electorate table");
+
+
+        assert!(rt.is_ok(), "Failed due to: {:?}",rt);
     }
 }
