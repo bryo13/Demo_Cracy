@@ -1,5 +1,5 @@
 use std::{fs, sync::Once};
-use {data, voting};
+use {after_voting, data, voting};
 
 static DB_ONCE: Once = Once::new();
 
@@ -14,6 +14,7 @@ fn init() {
 
     if db_exists {
         println!("Welcome to vote");
+        println!("current vote sum: {:?}", after_voting::cv());
         voting::vote_init();
     } else {
         DB_ONCE.call_once(|| {
