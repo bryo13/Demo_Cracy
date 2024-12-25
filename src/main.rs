@@ -14,7 +14,7 @@ fn init() {
 
     if db_exists {
         println!("Welcome to vote");
-        println!("current vote sum: {:?}", after_voting::cv());
+
         voting::vote_init();
     } else {
         DB_ONCE.call_once(|| {

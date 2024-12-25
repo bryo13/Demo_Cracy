@@ -63,7 +63,7 @@ async fn voting_table() -> Result<String, String> {
         .await
         .expect("Couldnt create votes pool");
 
-    let create_votes_table = sqlx::query(
+    let _create_votes_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS votes_table(
                 ID integer PRIMARY KEY AUTOINCREMENT,
                 voter_ID text  UNIQUE,
@@ -75,7 +75,7 @@ async fn voting_table() -> Result<String, String> {
     .execute(&votes_pool)
     .await
     .expect("Couldnt exec create votes table query");
-    println!("--> Created votes table: {:?}", create_votes_table);
+    println!("--> Created votes table");
     Ok(String::from("--> Created votes table successfully"))
 }
 

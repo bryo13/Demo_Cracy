@@ -2,32 +2,18 @@
 /// Calc percentage of all candidates
 /// -> create results table that holds vote count
 
-/// The winner is the first candidate gets to greater than 
+/// The winner is the first candidate gets to greater than
 /// (all electorate / 2) * 5
 use data::create_database::DB_PATH;
+use serde::Serialize;
+use serde_json::Value;
 use sqlx::{Row, SqlitePool};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct ElectionResult {
     mannix: i64,
     cleon: i64,
     rashelle: i64,
-}
-
-#[tokio::main]
-async fn create_results_table() -> Result<String, sqlx::Error> {
-    let results_pool = SqlitePool::connect(DB_PATH).await?;
-
-    let _results_table = sqlx::query(
-        "CREATE TABLE IF NOT EXISTS results(
-            ID integer PRIMARY KEY AUTOINCREMENT,
-            candidate_name text UNIQUE,
-            voter_sum integer);",
-    )
-    .execute(&results_pool)
-    .await?;
-
-    Ok(String::from("Created results table"))
 }
 
 #[tokio::main]
@@ -69,12 +55,12 @@ async fn insert_results(res: ElectionResult) -> Result<String, sqlx::Error> {
     let ser = serde_json::to_value(&res).expect("couldnt serialize preference struct");
     if let Value::Object(flds) = ser {
         for (k, v) in flds {
-            let _insert_query = sqlx::query("
-            INSERT INTO results(candidate_name, voter_sum) VALUES(?,?);
-            ")
-            .bind(k).bind(v)
-            .execute(&insert_pool)
-            .await?;
+            let _insert_query =
+                sqlx::query("INSERT INTO results(candidate_name, voter_sum) VALUES(?,?);")
+                    .bind(k)
+                    .bind(v)
+                    .execute(&insert_pool)
+                    .await?;
         }
     };
     Ok(String::from("Inserted results"))
@@ -83,43 +69,30 @@ async fn insert_results(res: ElectionResult) -> Result<String, sqlx::Error> {
 // how many pple voted?
 #[tokio::main]
 async fn electorate_count() -> f64 {
-    let count_pool = SqlitePool::connect(DB_PATH).await?;
+    let count_pool = SqlitePool::connect(DB_PATH)
+        .await
+        .expect("couldnt create count pool");
 
     // find count of electorate
-    let count = sqlx::query("
+    let count = sqlx::query(
+        "
     SELECT COUNT(ID_number) AS count 
-    FROM "electorate_table"; 
-    ")
-    .fetch(&count_pool)
+    FROM electorate_table;",
+    )
+    .fetch_one(&count_pool)
     .await
     .expect("couldnt count all electorate");
 
     let count: f64 = count.get("count");
-    return count
+    return count;
 }
 
-fn calc_threshold() {
+fn calc_threshold() -> i64 {
     let count = electorate_count();
     let half = (count / 2.0).ceil() as i64;
-    return half * 5 
+    return half * 5;
 }
 
 // find winner
 // read results table in asc order
 // check the first candidate crossed the threshold
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_results_table() {
-        let rt = tokio::task::spawn_blocking(|| 
-            create_results_table())
-            .await
-            .expect("Couldnt init electorate table");
-
-
-        assert!(rt.is_ok(), "Failed due to: {:?}",rt);
-    }
-}
