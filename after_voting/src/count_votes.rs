@@ -9,9 +9,9 @@ use sqlx::{Row, SqlitePool};
 
 #[derive(Debug)]
 pub struct ElectionResult {
-    mannix_result: i64,
-    cleon_result: i64,
-    rashelle_result: i64,
+    mannix: i64,
+    cleon: i64,
+    rashelle: i64,
 }
 
 #[tokio::main]
@@ -54,26 +54,33 @@ async fn count_votes() -> ElectionResult {
         mannix_sum = r.get("mannix");
     }
     return ElectionResult {
-        mannix_result: mannix_sum,
-        cleon_result: cleon_sum,
-        rashelle_result: rashelle_sum,
+        mannix: mannix_sum,
+        cleon: cleon_sum,
+        rashelle: rashelle_sum,
     };
 }
 
 // insert count results to results table
 #[tokio::main]
-async fn insert_results() -> Result<String, sqlx::Error> {
+async fn insert_results(res: ElectionResult) -> Result<String, sqlx::Error> {
     let results = count_votes();
     let insert_pool = SqlitePool::connect(DB_PATH).await?;
 
-    let _insert_query = sqlx::query("
-        INSERT INTO results(candidate_name, voter_sum) VALUES(?,?);
-    ")
-    .bind().bind()
-    .execute(&insert_pool)
-    .await?;
+    let ser = serde_json::to_value(&res).expect("couldnt serialize preference struct");
+    if let Value::Object(flds) = ser {
+        for (k, v) in flds {
+            let _insert_query = sqlx::query("
+            INSERT INTO results(candidate_name, voter_sum) VALUES(?,?);
+            ")
+            .bind(k).bind(v)
+            .execute(&insert_pool)
+            .await?;
+        }
+    };
+    Ok(String::from("Inserted results"))
 }
 
+// how many pple voted?
 #[tokio::main]
 async fn electorate_count() -> f64 {
     let count_pool = SqlitePool::connect(DB_PATH).await?;
@@ -97,9 +104,9 @@ fn calc_threshold() {
     return half * 5 
 }
 
-fn find_winner(cnds: ElectionResult) {
-    let ser_results = serde_json::to_value(&cnds).expect("couldnt serialize results struct");
-}
+// find winner
+// read results table in asc order
+// check the first candidate crossed the threshold
 
 #[cfg(test)]
 mod tests {
