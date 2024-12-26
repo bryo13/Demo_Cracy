@@ -15,7 +15,7 @@ use serde_json::Value;
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 use std::{collections::HashMap, io};
 
-const VOTING_DATE: &str = "2024-11-05";
+pub const VOTING_DATE: &str = "2024-11-05";
 
 #[derive(Debug, Serialize)]
 struct Preference {
