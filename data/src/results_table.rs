@@ -18,7 +18,9 @@ pub fn create_results_table() -> Result<String, String> {
 
 #[tokio::main]
 async fn results_table() -> Result<String, String> {
-    let results_pool = SqlitePool::connect(create_database::DB_PATH).await.expect("Cant create results pool");
+    let results_pool = SqlitePool::connect(create_database::DB_PATH)
+        .await
+        .expect("Cant create results pool");
 
     let _results_table = sqlx::query(
         "CREATE TABLE IF NOT EXISTS results(

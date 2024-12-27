@@ -1,9 +1,6 @@
 /// basically calling SUM() on all columns of votes_table
 /// Calc percentage of all candidates
 /// -> create results table that holds vote count
-
-/// The winner is the first candidate gets to greater than
-/// (all electorate / 2) * 5
 use data::create_database::DB_PATH;
 use serde::Serialize;
 use serde_json::Value;
@@ -23,20 +20,21 @@ pub fn returning_officer() {
 }
 
 #[tokio::main]
-async fn get_results() -> SqliteRow{
+async fn get_results() -> SqliteRow {
     let sum_pool = SqlitePool::connect(DB_PATH).await.expect("cant connect db");
 
-    let sum_query = sqlx::query("SELECT SUM(Rashelle) as Rashelle, SUM(Cleon) as Cleon, SUM(Mannix) as Mannix 
-        FROM votes_table;")
-        .fetch_one(&sum_pool)
-        .await
-        .expect("couldnt get sum of the votes");
+    let sum_query = sqlx::query(
+        "SELECT SUM(Rashelle) as Rashelle, SUM(Cleon) as Cleon, SUM(Mannix) as Mannix 
+        FROM votes_table;",
+    )
+    .fetch_one(&sum_pool)
+    .await
+    .expect("couldnt get sum of the votes");
 
-    return sum_query
+    return sum_query;
 }
 
 fn sum_votes(votes_sum: SqliteRow) -> ElectionResult {
-    
     let mut cleon_sum: i64 = votes_sum.get("Cleon");
     let mut mannix_sum: i64 = votes_sum.get("Mannix");
     let mut rashelle_sum: i64 = votes_sum.get("Rashelle");
@@ -48,7 +46,7 @@ fn sum_votes(votes_sum: SqliteRow) -> ElectionResult {
     };
 }
 
-// // insert count results to results table
+// insert count results to results table
 #[tokio::main]
 async fn insert_results(results: ElectionResult) -> Result<String, sqlx::Error> {
     let insert_pool = SqlitePool::connect(DB_PATH).await?;
@@ -67,34 +65,3 @@ async fn insert_results(results: ElectionResult) -> Result<String, sqlx::Error> 
     println!("Inserted results");
     Ok(String::from("Inserted results"))
 }
-
-// // how many pple voted?
-#[tokio::main]
-async fn electorate_count() -> f64 {
-    let count_pool = SqlitePool::connect(DB_PATH)
-        .await
-        .expect("couldnt create count pool");
-
-    // find count of electorate
-    let count = sqlx::query(
-        "
-    SELECT COUNT(ID_number) AS count 
-    FROM electorate_table;",
-    )
-    .fetch_one(&count_pool)
-    .await
-    .expect("couldnt count all electorate");
-
-    let count: f64 = count.get("count");
-    return count;
-}
-
-fn calc_threshold() -> i64 {
-    let count = electorate_count();
-    let half = (count / 2.0).ceil() as i64;
-    return half * 5;
-}
-
-// // find winner
-// // read results table in asc order
-// // check the first candidate crossed the threshold

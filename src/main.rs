@@ -1,6 +1,6 @@
 use std::{fs, sync::Once};
-use {after_voting, data, voting};
 use voting::voting_day::VOTING_DATE;
+use {after_voting, data, voting};
 
 static DB_ONCE: Once = Once::new();
 
@@ -25,12 +25,12 @@ fn db_init() {
 
 // API call from timeserver to confirm date == const VOTING_DATE
 fn confirm_current_date() -> bool {
-    return true
+    return true;
 }
 
 // confirm voting is done to start vote count
 fn confirm_time_after_1830() -> bool {
-    return true
+    return true;
 }
 
 // // call after voting is done
@@ -42,6 +42,6 @@ fn pick_winner() {
 }
 
 fn main() {
-    // db_init();
+    //db_init();
     pick_winner();
 }
