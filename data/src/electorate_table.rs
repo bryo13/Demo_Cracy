@@ -4,7 +4,7 @@
 use crate::create_database;
 use crate::electorate_seed;
 
-use sqlx::SqlitePool;
+use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 
 pub fn create_electorate_table() -> Result<String, String> {
     let _ = match create_database::create_db() {
@@ -66,6 +66,33 @@ async fn insert_electorate() -> Result<String, String> {
     }
     println!("--> Inserted seed data into electorate");
     Ok(String::from("--> Inserted electorate table successfully"))
+}
+
+// query for electorate count
+#[tokio::main]
+async fn get_electorate_count() -> Result<SqliteRow, sqlx::Error> {
+    let count_pool = SqlitePool::connect(create_database::DB_PATH).await?;
+
+    let count = sqlx::query(
+        "SELECT COUNT(ID_number) AS count 
+    FROM electorate_table;",
+    )
+    .fetch_one(&count_pool)
+    .await?;
+
+    Ok(count)
+}
+
+pub fn Electorate_count() -> i64 {
+    let mut c: i64 = 0;
+    match get_electorate_count() {
+        Ok(count) => {
+            c = count.get("count");
+        }
+        Err(e) => eprintln!("{:?}", e),
+    };
+
+    return c;
 }
 
 #[cfg(test)]

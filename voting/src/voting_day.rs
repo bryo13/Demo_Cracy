@@ -24,6 +24,7 @@ struct Preference {
     third_pref: String,
 }
 
+// holds votes per preference
 #[derive(Debug)]
 struct Votes {
     Mannix: i8,
@@ -89,6 +90,7 @@ fn valid_age(details: Result<&SqliteRow, sqlx::Error>) -> bool {
 //}
 
 // map containing candidates
+// for removing already selected candidate
 fn candidate_map() -> HashMap<String, String> {
     let mut map = HashMap::new();
     map.insert(String::from("1"), String::from("Mannix"));
@@ -186,7 +188,7 @@ fn get_votes(cnds: Preference) -> Votes {
     return votes;
 }
 
-// update votes table
+// update votes table per voter
 #[tokio::main]
 async fn update_votes(electorate_details: Result<SqliteRow, sqlx::Error>) {
     let voting_pool = SqlitePool::connect(DB_PATH)

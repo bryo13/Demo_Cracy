@@ -6,6 +6,7 @@ use serde::Serialize;
 use serde_json::Value;
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 
+// holds results afer summation
 #[derive(Debug, Serialize)]
 pub struct ElectionResult {
     mannix: i64,
@@ -13,12 +14,14 @@ pub struct ElectionResult {
     rashelle: i64,
 }
 
+// fn called by external mods
 pub fn returning_officer() {
     let results = get_results();
     let sum = sum_votes(results);
     insert_results(sum).unwrap();
 }
 
+// query returning summed votes for each candidate
 #[tokio::main]
 async fn get_results() -> SqliteRow {
     let sum_pool = SqlitePool::connect(DB_PATH).await.expect("cant connect db");
@@ -34,6 +37,7 @@ async fn get_results() -> SqliteRow {
     return sum_query;
 }
 
+// returns updated ElectionResult type from get_results()
 fn sum_votes(votes_sum: SqliteRow) -> ElectionResult {
     let mut cleon_sum: i64 = votes_sum.get("Cleon");
     let mut mannix_sum: i64 = votes_sum.get("Mannix");
@@ -46,7 +50,7 @@ fn sum_votes(votes_sum: SqliteRow) -> ElectionResult {
     };
 }
 
-// insert count results to results table
+// insert results count to results table
 #[tokio::main]
 async fn insert_results(results: ElectionResult) -> Result<String, sqlx::Error> {
     let insert_pool = SqlitePool::connect(DB_PATH).await?;

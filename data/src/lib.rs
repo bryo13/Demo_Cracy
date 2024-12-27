@@ -1,7 +1,7 @@
 mod candidate_table;
 pub mod create_database;
 mod electorate_seed;
-mod electorate_table;
+pub mod electorate_table;
 mod results_table;
 mod voting_table;
 

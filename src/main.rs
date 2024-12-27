@@ -42,6 +42,6 @@ fn pick_winner() {
 }
 
 fn main() {
-    //db_init();
-    pick_winner();
+    db_init();
+    // pick_winner();
 }

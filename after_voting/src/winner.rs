@@ -1,29 +1,10 @@
+use data::create_database::DB_PATH;
+use data::electorate_table;
 /// The winner is the first candidate gets to greater than
 /// (all electorate / 2) * 5
-use sqlx::{sqlite::SqliteRow, SqlitePool, Row};
-use data::create_database::DB_PATH;
+use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 
-// how many pple eligible to vote?
-#[tokio::main]
-async fn electorate_count() -> i64 {
-    let count_pool = SqlitePool::connect(DB_PATH)
-        .await
-        .expect("couldnt create count pool");
-
-    let count = sqlx::query(
-        "
-    SELECT COUNT(ID_number) AS count 
-    FROM electorate_table;",
-    )
-    .fetch_one(&count_pool)
-    .await
-    .expect("couldnt count all electorate");
-
-    let count: i64 = count.get("count");
-    return count;
-}
-
-// read results_table
+// read results_table in desc order
 #[tokio::main]
 async fn read_results() -> Result<Vec<SqliteRow>, sqlx::Error> {
     let winner_pool = SqlitePool::connect(DB_PATH).await?;
@@ -39,11 +20,12 @@ async fn read_results() -> Result<Vec<SqliteRow>, sqlx::Error> {
     Ok(res_query)
 }
 
+// calc winning threshold -  (all electorate / 2) * 5
 fn calc_threshold(count: i64) -> i64 {
     let mut threshold: i64 = 0;
     let half = (count / 2) as i64;
     threshold = half * 5;
-    return threshold
+    return threshold;
 }
 
 // gets the winner
@@ -62,7 +44,7 @@ fn calc_threshold(count: i64) -> i64 {
 fn get_highest(res: Vec<SqliteRow>, count: i64) -> Vec<String> {
     let mut past_threshold: Vec<String> = Vec::new();
     let threshold = calc_threshold(count);
-    
+
     for row in res {
         let sum: i64 = row.get("voter_sum");
         let name: String = row.get("candidate_name");
@@ -71,13 +53,13 @@ fn get_highest(res: Vec<SqliteRow>, count: i64) -> Vec<String> {
             past_threshold.push(name);
         };
     }
-    return past_threshold
+    return past_threshold;
 }
 
 pub fn pronounce_winner() {
-    let count = electorate_count();
+    let count = electorate_table::Electorate_count();
     match read_results() {
-        Ok(row) => println!("{:?}",get_highest(row, count)),
+        Ok(row) => println!("{:?}", get_highest(row, count)),
         Err(e) => eprintln!("{:?}", e),
     };
 }
