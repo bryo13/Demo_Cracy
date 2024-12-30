@@ -10,10 +10,12 @@
 ///     5 points, the 2nd prefered candidate 3 and the least prefered candidate 1.
 use chrono::NaiveDate;
 use data::create_database::DB_PATH;
+use errors::unique_rows;
 use serde::Serialize;
 use serde_json::Value;
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 use std::{collections::HashMap, io};
+use tokio::runtime::Runtime;
 
 pub const VOTING_DATE: &str = "2024-11-05";
 
@@ -207,7 +209,7 @@ async fn update_votes(electorate_details: Result<SqliteRow, sqlx::Error>) {
         Err(e) => eprintln!("{}", e),
     };
 
-    let _insert_votes = sqlx::query(
+    match sqlx::query(
         "INSERT INTO votes_table(voter_ID,County,Rashelle,Mannix,Cleon) VALUES(?,?,?,?,?);",
     )
     .bind(ID_number)
@@ -217,22 +219,50 @@ async fn update_votes(electorate_details: Result<SqliteRow, sqlx::Error>) {
     .bind(votes_per_pref.Cleon)
     .execute(&voting_pool)
     .await
-    .expect("Couldnt exec insert query");
-    println!("Successfully voted!");
+    {
+        Ok(_) => println!("Successfully voted!"),
+        Err(e) => unique_rows::unique_constraint_failed(e, "Already voted"),
+    }
 }
 
 pub fn vote() {
-    println!("Enter your ID number");
+    println!("Enter your ID number:");
     let mut id = String::new();
     io::stdin().read_line(&mut id).expect("Cant read id number");
 
-    let person = electorate_details(id);
-    match person {
-        Ok(ref electorate) => {
-            if valid_age(Ok(electorate)) {
-                update_votes(person);
+    let mut trimed_id: String = id.trim().to_string();
+    if !voted(&mut trimed_id) {
+        let person = electorate_details(trimed_id);
+        match person {
+            Ok(ref electorate) => {
+                if valid_age(Ok(electorate)) {
+                    update_votes(person);
+                }
             }
+            Err(e) => eprintln!("Error {:#?}", e),
         }
-        Err(e) => eprintln!("Error {:#?}", e),
+    } else {
+        eprintln!("Already voted");
     }
+}
+
+// check already votes
+#[tokio::main]
+async fn check_voted(id: &mut String) -> SqliteRow {
+    let voting_pool = SqlitePool::connect(DB_PATH)
+        .await
+        .expect("Cant create voting pool");
+
+    let rw = sqlx::query("SELECT EXISTS(SELECT 1  from votes_table WHERE voter_ID = ?);")
+        .bind(id.to_string())
+        .fetch_one(&voting_pool)
+        .await
+        .expect("couldnt run check voter query");
+
+    return rw;
+}
+
+fn voted(id: &mut String) -> bool {
+    let exists: bool = check_voted(id).get(0);
+    return exists;
 }

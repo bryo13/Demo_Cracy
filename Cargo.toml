@@ -13,4 +13,5 @@ members = [
     "data", 
     "voting",
     "after_voting",
+    "errors",
 ]
