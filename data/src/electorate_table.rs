@@ -3,6 +3,7 @@
 ///     -> insert seed data into electorate_table
 use crate::create_database;
 use crate::electorate_seed;
+use errors::unique_rows;
 
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 
@@ -57,14 +58,17 @@ async fn insert_electorate() -> Result<String, String> {
     let seed_data = electorate_seed::seed();
 
     for sd in seed_data {
-        sqlx::query(
+        match sqlx::query(
         "INSERT INTO electorate_table(DOB,First_name,Last_name, ID_number, County) VALUES(?,?,?,?,?);")
         .bind(sd.dob).bind(sd.first_name).bind(sd.last_name).bind(sd.id_number).bind(sd.county)
         .execute(&insert_pool)
         .await
-        .expect("Couldnt exec insert query");
+        {
+            Ok(_) => println!("--> Inserted electorate"),
+            Err(e) => unique_rows::unique_constraint_failed(e, "Dublicate electorate data"),
+        }
     }
-    println!("--> Inserted seed data into electorate");
+
     Ok(String::from("--> Inserted electorate table successfully"))
 }
 

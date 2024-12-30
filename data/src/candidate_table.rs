@@ -15,6 +15,7 @@
 ///     2nd prefered count and 3rd prefered count
 ///
 use crate::create_database;
+use errors::unique_rows;
 use sqlx::{Row, SqlitePool};
 
 pub fn create_candidate_table() -> Result<String, String> {
@@ -100,16 +101,19 @@ async fn insert_candidate() -> Result<String, String> {
     }
 
     for c in cands {
-        sqlx::query(
+        match sqlx::query(
             "INSERT OR IGNORE INTO candidates_table(Electorate_ID_number)
                 VALUES(?);",
         )
         .bind(c)
         .execute(&candidate_insert_pool)
         .await
-        .expect("couldnt insert the candidates");
+        {
+            Ok(_) => println!("--> Inserted candidate "),
+            Err(e) => unique_rows::unique_constraint_failed(e, "Dublicate candidates"),
+        };
     }
-    println!("--> Inserted candidates");
+
     Ok(String::from("Inserted candidates"))
 }
 

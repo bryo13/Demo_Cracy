@@ -9,5 +9,6 @@ pub fn unique_constraint_failed(e: Error, msg: &str) {
         }
     } else {
         eprintln!("{:?}", e);
+        return;
     }
 }
