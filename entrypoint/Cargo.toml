@@ -1,0 +1,9 @@
+[package]
+name = "entrypoint"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+data = {path = "../data"}
+voting = {path = "../voting"}
+after_voting = {path = "../after_voting"}

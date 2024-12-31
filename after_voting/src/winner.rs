@@ -63,3 +63,21 @@ pub fn pronounce_winner() {
         Err(e) => eprintln!("{:?}", e),
     };
 }
+
+// // API call from timeserver to confirm date == const VOTING_DATE
+// fn confirm_current_date() -> bool {
+//     return true;
+// }
+
+// // confirm voting is done to start vote count
+// fn confirm_time_after_1830() -> bool {
+//     return true;
+// }
+
+// // // call after voting is done
+// // // add to only call after voting is done i.e const VOTING_DATE >= 1830hrs
+// fn pick_winner() {
+//     if confirm_current_date() && confirm_time_after_1830() {
+//         after_voting::count();
+//     }
+// }
