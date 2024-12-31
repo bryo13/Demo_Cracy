@@ -67,30 +67,6 @@ fn valid_age(details: Result<&SqliteRow, sqlx::Error>) -> bool {
     return false;
 }
 
-// confirm the voter chooses a valid candidate
-// checking if they are part of the candidates' table
-//async fn candidate_present(firstname: String) -> bool {
-//    let query_pool = SqlitePool::connect(DB_PATH)
-//        .await
-//       .expect("Could not create get candidate pool");
-//
-//    let cnds = sqlx::query(
-//        "SELECT et.First_name, ct.Electorate_ID_number
-//    FROM electorate_table as et
-//    INNER JOIN candidates_table as ct
-//    ON ct.Electorate_ID_number = et.ID_number
-//    where et.First_name = ?;",
-//    )
-//  .bind(firstname)
-//.fetch_one(&query_pool)
-//  .await;
-
-//match cnds {
-//     Ok(_) => return true,
-//    Err(_) => return false,
-//};
-//}
-
 // map containing candidates
 // for removing already selected candidate
 fn candidate_map() -> HashMap<String, String> {
@@ -111,7 +87,7 @@ fn get_pref() -> Preference {
         third_pref: String::new(),
     };
     println!("Enter your prefered candidate");
-    println!("{:#?}", candidates);
+    println!("\x1b[31m{:#?}\x1b[0m", candidates);
 
     let mut first = String::new();
     io::stdin()
@@ -130,7 +106,7 @@ fn get_pref() -> Preference {
     }
 
     println!("Enter your prefered candidate");
-    println!("{:#?}", candidates);
+    println!("\x1b[31m{:#?}\x1b[0m", candidates);
     let mut two = String::new();
     io::stdin()
         .read_line(&mut two)
@@ -150,7 +126,7 @@ fn get_pref() -> Preference {
     for val in candidates.values() {
         preference.third_pref = val.to_string();
     }
-    println!("Your {:#?} ", preference);
+    println!("\x1b[31mYour {:#?} \x1b[0m", preference);
     return preference;
 }
 
@@ -242,7 +218,7 @@ pub fn vote() {
             Err(e) => eprintln!("Error {:#?}", e),
         }
     } else {
-        eprintln!("Already voted");
+        eprintln!("\x1b[31mAlready voted\x1b[0m");
     }
 }
 
