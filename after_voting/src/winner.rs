@@ -30,7 +30,7 @@ fn print_results() {
             for cs in row {
                 name = cs.get("candidate_name");
                 sum = cs.get("voter_sum");
-                println!("{:?} got {:?}", name, sum);
+                println!("\x1b[33m{:?} got {:?}\x1b[0m", name, sum);
             }
         }
         Err(e) => eprintln!("{:?}", e),
@@ -45,16 +45,6 @@ fn calc_threshold(count: i64) -> i64 {
     return threshold;
 }
 
-// gets the winner
-// fn get_highest(res: Vec<SqliteRow>) {
-//     if let Some(first_row) = res.get(0) {
-//         let name: String = first_row.get("candidate_name");
-//         let score: i64 = first_row.get("voter_sum");
-//         println!("{:?} - {:?}", name, score);
-//     } else {
-//         println!("No candidate found");
-//     }
-// }
 
 // highest and passes the threshold
 // returns those that pass as a vec
@@ -73,16 +63,17 @@ fn get_highest(res: Vec<SqliteRow>, count: i64) -> Vec<String> {
     return past_threshold;
 }
 
+// if there are two candidadates - reelection protocol
 pub fn pronounce_winner() {
     let count = electorate_table::Electorate_count();
     match read_results() {
         Ok(row) => {
             let res = get_highest(row, count);
             if res.len() < 1 {
-                println!("No candidate passed the threshold");
+                println!("\x1b[31mNo candidate passed the threshold\x1b[0m");
                 print_results();
             } else {
-                println!("The following passed the threshold");
+                println!("\x1b[31The following passed the threshold\x1b[0m");
                 for candidate in res {
                     println!("{:?}", candidate)
                 }
