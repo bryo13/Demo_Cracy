@@ -10,10 +10,10 @@ static DB_ONCE: Once = Once::new();
 fn collect_args() -> Vec<String> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        no_args();
+        wrong_args("Takes one arg");
         process::exit(1);
     } else if args.len() > 2 {
-        eprintln!("takes only one argument");
+        wrong_args("requires only one arg");
         process::exit(1);
     }
     return args;
@@ -40,28 +40,18 @@ fn db_init() {
     }
 }
 
-fn no_args() {
-    println!("\x1b[31mNo args read\x1b[0m");
-    println!("\x1b[4mAdmin args\x1b[0m :");
-    println!("\x1b[34mdbinit - initializes db and nessesary tables
+fn wrong_args(msg: &str) {
+    println!("\x1b[31m{}\x1b[0m",msg);
+    println!("\x1b[4m\nAdmin args\x1b[0m :");
+    println!(
+        "\x1b[34mdbinit - initializes db and nessesary tables
     i.e ./demo_cracy dbinit
 vote - accepts user votes, through a server
     i.e ./demo_cracy vote
 count_votes - counts the votes each candidate got and checks if any candidate passed the threshold
     i.e ./demo_cracy count_votes
-\x1b[0m");
-}
-
-fn wrong_args() {
-    println!("\x1b[31mWrong args read\x1b[0m");
-    println!("\x1b[4mAdmin args\x1b[0m :");
-    println!("\x1b[34mdbinit - initializes db and nessesary tables
-    i.e ./demo_cracy dbinit
-vote - accepts user votes, through a server
-    i.e ./demo_cracy vote
-count_votes - counts the votes each candidate got and checks if any candidate passed the threshold
-    i.e ./demo_cracy count_votes
-\x1b[0m");
+\x1b[0m"
+    );
 }
 // // API call from timeserver to confirm date == const VOTING_DATE
 // fn confirm_current_date() -> bool {
@@ -81,16 +71,25 @@ count_votes - counts the votes each candidate got and checks if any candidate pa
 //     }
 // }
 
+fn start_vote() {
+    let db_exists = db_available();
+    if !db_exists {
+        println!("\x1b[31mGet admin to get things ready\x1b[0m");
+        process::exit(1);
+    }
+    voting::vote_init()
+}
+
 fn split_args() {
     let args: Vec<String> = collect_args();
     if args[1] == "dbinit".to_string() {
         db_init()
     } else if args[1] == "vote".to_string() {
-        voting::vote_init()
+        start_vote()
     } else if args[1] == "count_votes".to_string() {
         after_voting::count()
     } else {
-        wrong_args()
+        wrong_args("Not one of the commands available")
     }
 }
 
