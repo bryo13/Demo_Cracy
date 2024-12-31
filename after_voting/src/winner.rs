@@ -1,6 +1,6 @@
 use data::create_database::DB_PATH;
 use data::electorate_table;
-/// The winner is the first candidate gets to greater than
+/// The winner is the first candidate who gets to greater than
 /// (all electorate / 2) * 5
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
 
@@ -18,6 +18,23 @@ async fn read_results() -> Result<Vec<SqliteRow>, sqlx::Error> {
     .await?;
 
     Ok(res_query)
+}
+
+// print results
+fn print_results() {
+    match read_results() {
+        Ok(row) => {
+            let mut sum: i64 = 0;
+            let mut name: String = String::new();
+
+            for cs in row {
+                name = cs.get("candidate_name");
+                sum = cs.get("voter_sum");
+                println!("{:?} got {:?}", name, sum);
+            }
+        }
+        Err(e) => eprintln!("{:?}", e),
+    };
 }
 
 // calc winning threshold -  (all electorate / 2) * 5
@@ -59,25 +76,19 @@ fn get_highest(res: Vec<SqliteRow>, count: i64) -> Vec<String> {
 pub fn pronounce_winner() {
     let count = electorate_table::Electorate_count();
     match read_results() {
-        Ok(row) => println!("{:?}", get_highest(row, count)),
+        Ok(row) => {
+            let res = get_highest(row, count);
+            if res.len() < 1 {
+                println!("No candidate passed the threshold");
+                print_results();
+            } else {
+                println!("The following passed the threshold");
+                for candidate in res {
+                    println!("{:?}", candidate)
+                }
+                print_results();
+            }
+        }
         Err(e) => eprintln!("{:?}", e),
     };
 }
-
-// // API call from timeserver to confirm date == const VOTING_DATE
-// fn confirm_current_date() -> bool {
-//     return true;
-// }
-
-// // confirm voting is done to start vote count
-// fn confirm_time_after_1830() -> bool {
-//     return true;
-// }
-
-// // // call after voting is done
-// // // add to only call after voting is done i.e const VOTING_DATE >= 1830hrs
-// fn pick_winner() {
-//     if confirm_current_date() && confirm_time_after_1830() {
-//         after_voting::count();
-//     }
-// }

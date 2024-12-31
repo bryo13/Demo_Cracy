@@ -10,7 +10,7 @@ static DB_ONCE: Once = Once::new();
 fn collect_args() -> Vec<String> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        eprintln!("Please enter arguments");
+        no_args();
         process::exit(1);
     } else if args.len() > 2 {
         eprintln!("takes only one argument");
@@ -40,18 +40,46 @@ fn db_init() {
     }
 }
 
-fn start_vote() {
-    voting::vote_init()
+fn no_args() {
+    println!("No args was read\n");
+    println!("Admin args:");
+    println!(
+        "dbinit - initializes db and nessesary tables
+    i.e ./demo_cracy dbinit
+vote - accepts user votes, through a server
+    i.e ./demo_cracy vote
+count_votes - counts the votes each candidate got and checks if any candidate passed the threshold
+    i.e ./demo_cracy count_votes
+"
+    );
 }
+
+// // API call from timeserver to confirm date == const VOTING_DATE
+// fn confirm_current_date() -> bool {
+//     return true;
+// }
+
+// // confirm voting is done to start vote count
+// fn confirm_time_after_1830() -> bool {
+//     return true;
+// }
+
+// // // call after voting is done
+// // // add to only call after voting is done i.e const VOTING_DATE >= 1830hrs
+// fn pick_winner() {
+//     if confirm_current_date() && confirm_time_after_1830() {
+//         after_voting::count();
+//     }
+// }
 
 fn split_args() {
     let args: Vec<String> = collect_args();
     if args[1] == "dbinit".to_string() {
         db_init()
     } else if args[1] == "vote".to_string() {
-        start_vote()
-    } else {
-        eprintln!("Not a command");
+        voting::vote_init()
+    } else if args[1] == "count_votes".to_string() {
+        after_voting::count()
     }
 }
 

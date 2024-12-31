@@ -2,6 +2,7 @@
 /// Calc percentage of all candidates
 /// -> create results table that holds vote count
 use data::create_database::DB_PATH;
+use errors;
 use serde::Serialize;
 use serde_json::Value;
 use sqlx::{sqlite::SqliteRow, Row, SqlitePool};
@@ -58,14 +59,19 @@ async fn insert_results(results: ElectionResult) -> Result<String, sqlx::Error> 
     let ser = serde_json::to_value(&results).expect("couldnt serialize preference struct");
     if let Value::Object(flds) = ser {
         for (k, v) in flds {
-            let _insert_query =
-                sqlx::query("INSERT INTO results(candidate_name, voter_sum) VALUES(?,?);")
-                    .bind(k)
-                    .bind(v)
-                    .execute(&insert_pool)
-                    .await?;
+            match sqlx::query("INSERT INTO results(candidate_name, voter_sum) VALUES(?,?);")
+                .bind(k)
+                .bind(v)
+                .execute(&insert_pool)
+                .await
+            {
+                Ok(_) => println!("Recorded results"),
+                Err(e) => errors::unique_rows::unique_constraint_failed(
+                    e,
+                    "results records have already been recorded",
+                ),
+            };
         }
     };
-    println!("Inserted results");
     Ok(String::from("Inserted results"))
 }
