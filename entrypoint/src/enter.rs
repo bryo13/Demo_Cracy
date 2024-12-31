@@ -52,6 +52,17 @@ count_votes - counts the votes each candidate got and checks if any candidate pa
 \x1b[0m");
 }
 
+fn wrong_args() {
+    println!("\x1b[31mWrong args read\x1b[0m");
+    println!("\x1b[4mAdmin args\x1b[0m :");
+    println!("\x1b[34mdbinit - initializes db and nessesary tables
+    i.e ./demo_cracy dbinit
+vote - accepts user votes, through a server
+    i.e ./demo_cracy vote
+count_votes - counts the votes each candidate got and checks if any candidate passed the threshold
+    i.e ./demo_cracy count_votes
+\x1b[0m");
+}
 // // API call from timeserver to confirm date == const VOTING_DATE
 // fn confirm_current_date() -> bool {
 //     return true;
@@ -78,6 +89,8 @@ fn split_args() {
         voting::vote_init()
     } else if args[1] == "count_votes".to_string() {
         after_voting::count()
+    } else {
+        wrong_args()
     }
 }
 
